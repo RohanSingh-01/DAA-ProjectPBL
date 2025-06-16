@@ -6,598 +6,7 @@
     <title>AI Writing Assistant</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-    <style>
-        /* Global Styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        /* Navigation */
-        .navbar {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            z-index: 1000;
-            padding: 1rem 2rem;
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .nav-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #667eea;
-            text-decoration: none;
-        }
-
-        .nav-buttons {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-        }
-
-        .btn {
-            padding: 0.6rem 1.5rem;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-        }
-
-        .btn-outline {
-            background: transparent;
-            color: #667eea;
-            border: 2px solid #667eea;
-        }
-
-        .btn-outline:hover {
-            background: #667eea;
-            color: white;
-        }
-
-        .btn-premium {
-            background: linear-gradient(135deg, #ffd700, #ffed4a);
-            color: #333;
-            animation: premium-glow 2s ease-in-out infinite alternate;
-        }
-
-        @keyframes premium-glow {
-            0% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.5); }
-            100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.8); }
-        }
-
-        /* Landing Page */
-        .landing-page {
-            display: block;
-            padding-top: 80px;
-        }
-
-        .hero {
-            text-align: center;
-            padding: 4rem 2rem;
-            color: white;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .hero h1 {
-            font-size: 3.5rem;
-            font-weight: 800;
-            margin-bottom: 1rem;
-            line-height: 1.2;
-        }
-
-        .hero p {
-            font-size: 1.3rem;
-            margin-bottom: 2rem;
-            opacity: 0.9;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .hero-buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .features {
-            padding: 4rem 2rem;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-        }
-
-        .features-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-        }
-
-        .feature-card {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 2rem;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            transition: transform 0.3s ease;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-10px);
-        }
-
-        .feature-icon {
-            font-size: 3rem;
-            color: #667eea;
-            margin-bottom: 1rem;
-        }
-
-        /* Login/Register Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-content {
-            background: white;
-            padding: 2rem;
-            border-radius: 20px;
-            width: 90%;
-            max-width: 400px;
-            position: relative;
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #666;
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 0.8rem;
-            border: 2px solid #e1e5e9;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: border-color 0.3s;
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        /* Main App */
-        .main-app {
-            display: none;
-            padding-top: 80px;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 2rem auto;
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(20px);
-            overflow: hidden;
-        }
-
-        .app-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 2rem;
-            text-align: center;
-            position: relative;
-        }
-
-        .user-info {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            font-size: 0.9rem;
-        }
-
-        .premium-badge {
-            background: linear-gradient(135deg, #ffd700, #ffed4a);
-            color: #333;
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 0.8rem;
-        }
-
-        /* API Setup */
-        .api-setup {
-            padding: 1.5rem 2rem;
-            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-            border-bottom: 1px solid #dee2e6;
-        }
-
-        .api-input-group {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .api-input {
-            flex: 1;
-            padding: 0.8rem 1rem;
-            border: 2px solid #e9ecef;
-            border-radius: 12px;
-            font-size: 0.9rem;
-            transition: all 0.3s;
-        }
-
-        .api-input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .save-btn {
-            padding: 0.8rem 1.5rem;
-            background: linear-gradient(135deg, #28a745, #20c997);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .save-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
-        }
-
-        /* Tools Section */
-        .tools-section {
-            padding: 2rem;
-            background: #f8f9fa;
-        }
-
-        .tools-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        .tool-btn {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.8rem;
-            padding: 1.5rem;
-            background: white;
-            border: 2px solid #e9ecef;
-            border-radius: 16px;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-align: center;
-            position: relative;
-        }
-
-        .tool-btn:hover {
-            border-color: #667eea;
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.2);
-        }
-
-        .tool-btn.active {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border-color: transparent;
-        }
-
-        .tool-btn.premium-only {
-            opacity: 0.6;
-            position: relative;
-        }
-
-        .tool-btn.premium-only::after {
-            content: '👑';
-            position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
-            font-size: 1.2rem;
-        }
-
-        .tool-icon {
-            font-size: 2rem;
-        }
-
-        /* Main Content */
-        .main-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            padding: 2rem;
-        }
-
-        .content-section {
-            background: white;
-            border-radius: 16px;
-            padding: 1.5rem;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-            border-bottom: 2px solid #f8f9fa;
-            padding-bottom: 1rem;
-        }
-
-        .text-area, .output-area {
-            width: 100%;
-            height: 400px;
-            padding: 1.5rem;
-            border: 2px solid #e9ecef;
-            border-radius: 12px;
-            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
-            font-size: 0.9rem;
-            line-height: 1.6;
-            resize: vertical;
-            transition: all 0.3s;
-        }
-
-        .text-area:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .output-area {
-            background: linear-gradient(135deg, #f8f9fa, #ffffff);
-            overflow-y: auto;
-            white-space: pre-wrap;
-        }
-
-        /* Premium Modal */
-        .premium-modal .modal-content {
-            max-width: 500px;
-            text-align: center;
-        }
-
-        .pricing-cards {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin: 2rem 0;
-        }
-
-        .pricing-card {
-            background: linear-gradient(135deg, #f8f9fa, #ffffff);
-            padding: 2rem;
-            border-radius: 16px;
-            border: 2px solid #e9ecef;
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-
-        .pricing-card:hover, .pricing-card.selected {
-            border-color: #667eea;
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.2);
-        }
-
-        .pricing-card.popular {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            position: relative;
-        }
-
-        .pricing-card.popular::before {
-            content: 'POPULAR';
-            position: absolute;
-            top: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #ffd700;
-            color: #333;
-            padding: 0.3rem 1rem;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            font-weight: 700;
-        }
-
-        .price {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
-        .price-period {
-            font-size: 0.9rem;
-            opacity: 0.7;
-            margin-bottom: 1rem;
-        }
-
-        .features-list {
-            list-style: none;
-            text-align: left;
-        }
-
-        .features-list li {
-            padding: 0.3rem 0;
-            position: relative;
-            padding-left: 1.5rem;
-        }
-
-        .features-list li::before {
-            content: '✓';
-            position: absolute;
-            left: 0;
-            color: #28a745;
-            font-weight: bold;
-        }
-
-        /* Loading Animation */
-        .loading {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.95);
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 3000;
-        }
-
-        .spinner {
-            width: 60px;
-            height: 60px;
-            border: 6px solid #f3f3f3;
-            border-top: 6px solid #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 1rem;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-            
-            .main-content {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-                padding: 1rem;
-            }
-            
-            .tools-grid {
-                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            }
-            
-            .pricing-cards {
-                grid-template-columns: 1fr;
-            }
-            
-            .nav-buttons {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-        }
-
-        /* Notification Styles */
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 1rem 1.5rem;
-            border-radius: 12px;
-            color: white;
-            font-weight: 600;
-            z-index: 3001;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            min-width: 300px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-            transform: translateX(100%);
-            transition: transform 0.3s ease;
-        }
-
-        .notification.success {
-            background: linear-gradient(135deg, #28a745, #20c997);
-        }
-
-        .notification.error {
-            background: linear-gradient(135deg, #dc3545, #e74c3c);
-        }
-
-        .notification.show {
-            transform: translateX(0);
-        }
-
-        /* Hide/Show Pages */
-        .page {
-            display: none;
-        }
-
-        .page.active {
-            display: block;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <!-- Navigation -->
@@ -632,61 +41,114 @@
     <!-- Landing Page -->
     <div id="landingPage" class="page active landing-page">
         <section class="hero">
-            <h1>Transform Your Writing with AI</h1>
-            <p>Enhance your content with powerful AI-driven tools for grammar, tone, vocabulary, and more. Write better, faster, and with confidence.</p>
-            <div class="hero-buttons">
-                <button class="btn btn-primary" onclick="showRegisterModal()">
-                    <i class="fas fa-rocket"></i> Get Started Free
-                </button>
-                <button class="btn btn-outline" onclick="showLoginModal()">
-                    <i class="fas fa-sign-in-alt"></i> Sign In
-                </button>
+            <div class="hero-content">
+                <h1>Transform Your Writing with AI</h1>
+                <p>Enhance your content with powerful AI-driven tools for grammar, tone, vocabulary, and more. Write better, faster, and with confidence.</p>
+                <div class="hero-buttons">
+                    <button class="btn btn-primary btn-large" onclick="showRegisterModal()">
+                        <i class="fas fa-rocket"></i> Get Started Free
+                    </button>
+                    <button class="btn btn-outline btn-large" onclick="showLoginModal()">
+                        <i class="fas fa-sign-in-alt"></i> Sign In
+                    </button>
+                </div>
+            </div>
+            <div class="hero-animation">
+                <div class="floating-card">
+                    <i class="fas fa-spell-check"></i>
+                    <span>Grammar Check</span>
+                </div>
+                <div class="floating-card">
+                    <i class="fas fa-adjust"></i>
+                    <span>Tone Adjustment</span>
+                </div>
+                <div class="floating-card">
+                    <i class="fas fa-brain"></i>
+                    <span>AI Enhancement</span>
+                </div>
             </div>
         </section>
 
         <section class="features">
-            <div class="features-container">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-spell-check"></i>
+            <div class="container">
+                <h2>Powerful Writing Tools</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-spell-check"></i>
+                        </div>
+                        <h3>Smart Grammar Check</h3>
+                        <p>Advanced AI-powered grammar and spell checking that goes beyond basic corrections.</p>
                     </div>
-                    <h3>Smart Grammar Check</h3>
-                    <p>Advanced AI-powered grammar and spell checking that goes beyond basic corrections.</p>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-adjust"></i>
+                        </div>
+                        <h3>Tone Adjustment</h3>
+                        <p>Transform your writing tone to match any audience - professional, casual, academic, and more.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h3>Vocabulary Enhancement</h3>
+                        <p>Elevate your writing with sophisticated vocabulary suggestions and improvements.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-target"></i>
+                        </div>
+                        <h3>Goal-Based Writing</h3>
+                        <p>Optimize your content for specific purposes - emails, essays, reports, and creative writing.</p>
+                    </div>
                 </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-adjust"></i>
+            </div>
+        </section>
+
+        <section class="pricing-preview">
+            <div class="container">
+                <h2>Choose Your Plan</h2>
+                <div class="pricing-cards">
+                    <div class="pricing-card">
+                        <h3>Free</h3>
+                        <div class="price">₹0<span>/month</span></div>
+                        <ul class="features-list">
+                            <li>Basic Grammar Check</li>
+                            <li>Spell Check</li>
+                            <li>5 AI requests/day</li>
+                            <li>Basic Support</li>
+                        </ul>
+                        <button class="btn btn-outline" onclick="showRegisterModal()">Get Started</button>
                     </div>
-                    <h3>Tone Adjustment</h3>
-                    <p>Transform your writing tone to match any audience - professional, casual, academic, and more.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-brain"></i>
+                    <div class="pricing-card popular">
+                        <div class="popular-badge">Most Popular</div>
+                        <h3>Monthly</h3>
+                        <div class="price">₹300<span>/month</span></div>
+                        <ul class="features-list">
+                            <li>All Free Features</li>
+                            <li>Advanced Grammar & Style</li>
+                            <li>Tone Adjustment</li>
+                            <li>Vocabulary Enhancement</li>
+                            <li>Goal-Based Writing</li>
+                            <li>Unlimited AI Requests</li>
+                            <li>Priority Support</li>
+                        </ul>
+                        <button class="btn btn-primary" onclick="showPremiumModal()">Upgrade Now</button>
                     </div>
-                    <h3>Vocabulary Enhancement</h3>
-                    <p>Elevate your writing with sophisticated vocabulary suggestions and improvements.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-target"></i>
+                    <div class="pricing-card">
+                        <div class="savings-badge">Save 17%</div>
+                        <h3>6 Months</h3>
+                        <div class="price">₹1,500<span>/6 months</span></div>
+                        <ul class="features-list">
+                            <li>All Premium Features</li>
+                            <li>Advanced AI Models</li>
+                            <li>Custom Writing Goals</li>
+                            <li>Export & Integration</li>
+                            <li>Analytics Dashboard</li>
+                            <li>24/7 Priority Support</li>
+                        </ul>
+                        <button class="btn btn-premium" onclick="showPremiumModal()">Best Value</button>
                     </div>
-                    <h3>Goal-Based Writing</h3>
-                    <p>Optimize your content for specific purposes - emails, essays, reports, and creative writing.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-crown"></i>
-                    </div>
-                    <h3>Premium Features</h3>
-                    <p>Unlock advanced tools, unlimited usage, and priority support with our premium plans.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-lightning"></i>
-                    </div>
-                    <h3>Real-time Processing</h3>
-                    <p>Get instant AI-powered suggestions and improvements as you write.</p>
                 </div>
             </div>
         </section>
@@ -694,7 +156,7 @@
 
     <!-- Main Application -->
     <div id="mainApp" class="page main-app">
-        <div class="container">
+        <div class="app-container">
             <header class="app-header">
                 <div class="user-info">
                     <span id="appUserName"></span>
@@ -740,26 +202,30 @@
                     <button class="tool-btn premium-only" data-tool="tone">
                         <i class="tool-icon fas fa-adjust"></i>
                         <span>Change Tone</span>
+                        <div class="premium-lock"><i class="fas fa-crown"></i></div>
                     </button>
                     <button class="tool-btn premium-only" data-tool="vocab">
                         <i class="tool-icon fas fa-book"></i>
                         <span>Enhance Vocab</span>
+                        <div class="premium-lock"><i class="fas fa-crown"></i></div>
                     </button>
                     <button class="tool-btn premium-only" data-tool="goal-based">
                         <i class="tool-icon fas fa-target"></i>
                         <span>Goal-Based</span>
+                        <div class="premium-lock"><i class="fas fa-crown"></i></div>
                     </button>
                     <button class="tool-btn premium-only" data-tool="creative">
                         <i class="tool-icon fas fa-magic"></i>
                         <span>Creative Writer</span>
+                        <div class="premium-lock"><i class="fas fa-crown"></i></div>
                     </button>
                 </div>
 
                 <!-- Options Panel -->
-                <div class="options-panel" id="optionsPanel" style="margin-top: 1rem;">
+                <div class="options-panel" id="optionsPanel">
                     <div class="option-group" id="toneOptions" style="display: none;">
                         <label>Select Tone:</label>
-                        <select id="toneSelect">
+                        <select id="toneSelect" class="select-input">
                             <option value="professional">Professional</option>
                             <option value="casual">Casual</option>
                             <option value="formal">Formal</option>
@@ -770,7 +236,7 @@
                     </div>
                     <div class="option-group" id="goalOptions" style="display: none;">
                         <label>Writing Goal:</label>
-                        <select id="goalSelect">
+                        <select id="goalSelect" class="select-input">
                             <option value="email">Email</option>
                             <option value="essay">Essay</option>
                             <option value="report">Report</option>
@@ -796,7 +262,7 @@
                         placeholder="Enter your text here to improve it with AI..."
                         class="text-area"
                     ></textarea>
-                    <div class="input-actions" style="margin-top: 1rem; display: flex; gap: 1rem;">
+                    <div class="input-actions">
                         <button id="clearInput" class="btn btn-outline">
                             <i class="fas fa-trash"></i> Clear
                         </button>
@@ -819,8 +285,8 @@
                         </div>
                     </div>
                     <div id="outputText" class="output-area">
-                        <div class="placeholder" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: #6c757d; text-align: center;">
-                            <i class="fas fa-lightbulb" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                        <div class="placeholder">
+                            <i class="fas fa-lightbulb"></i>
                             <p>Your enhanced text will appear here...</p>
                         </div>
                     </div>
@@ -833,26 +299,28 @@
     <div id="loginModal" class="modal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal()">&times;</button>
-            <h2 style="text-align: center; margin-bottom: 2rem; color: #333;">
-                <i class="fas fa-sign-in-alt"></i> Login
-            </h2>
+            <div class="modal-header">
+                <h2><i class="fas fa-sign-in-alt"></i> Welcome Back</h2>
+                <p>Sign in to continue your writing journey</p>
+            </div>
             <form id="loginForm">
                 <div class="form-group">
-                    <label for="loginEmail">Email</label>
-                    <input type="email" id="loginEmail" required>
+                    <label for="loginEmail">Email Address</label>
+                    <input type="email" id="loginEmail" required placeholder="Enter your email">
                 </div>
                 <div class="form-group">
                     <label for="loginPassword">Password</label>
-                    <input type="password" id="loginPassword" required>
+                    <input type="password" id="loginPassword" required placeholder="Enter your password">
                 </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
-                    <i class="fas fa-sign-in-alt"></i> Login
+                <button type="submit" class="btn btn-primary btn-full">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
                 </button>
             </form>
-            <p style="text-align: center; margin-top: 1rem; color: #666;">
-                Don't have an account? 
-                <a href="#" onclick="showRegisterModal()" style="color: #667eea; text-decoration: none;">Sign up</a>
-            </p>
+            <div class="modal-footer">
+                <p>Don't have an account? 
+                    <a href="#" onclick="showRegisterModal()">Create one now</a>
+                </p>
+            </div>
         </div>
     </div>
 
@@ -860,20 +328,93 @@
     <div id="registerModal" class="modal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal()">&times;</button>
-            <h2 style="text-align: center; margin-bottom: 2rem; color: #333;">
-                <i class="fas fa-user-plus"></i> Sign Up
-            </h2>
+            <div class="modal-header">
+                <h2><i class="fas fa-user-plus"></i> Join AI Writer Pro</h2>
+                <p>Create your account and start writing better</p>
+            </div>
             <form id="registerForm">
                 <div class="form-group">
                     <label for="registerName">Full Name</label>
-                    <input type="text" id="registerName" required>
+                    <input type="text" id="registerName" required placeholder="Enter your full name">
                 </div>
                 <div class="form-group">
-                    <label for="registerEmail">Email</label>
-                    <input type="email" id="registerEmail" required>
+                    <label for="registerEmail">Email Address</label>
+                    <input type="email" id="registerEmail" required placeholder="Enter your email">
                 </div>
                 <div class="form-group">
                     <label for="registerPassword">Password</label>
-                    <input type="password" id="registerPassword" required>
+                    <input type="password" id="registerPassword" required placeholder="Create a strong password">
                 </div>
-                <button type="submit" class="btn btn-
+                <button type="submit" class="btn btn-primary btn-full">
+                    <i class="fas fa-user-plus"></i> Create Account
+                </button>
+            </form>
+            <div class="modal-footer">
+                <p>Already have an account? 
+                    <a href="#" onclick="showLoginModal()">Sign in here</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Premium Modal -->
+    <div id="premiumModal" class="modal premium-modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <div class="modal-header">
+                <h2><i class="fas fa-crown"></i> Upgrade to Premium</h2>
+                <p>Unlock all features and supercharge your writing</p>
+            </div>
+            
+            <div class="pricing-cards">
+                <div class="pricing-card" data-plan="monthly" onclick="selectPlan('monthly')">
+                    <h3>Monthly Plan</h3>
+                    <div class="price">₹300<span>/month</span></div>
+                    <ul class="features-list">
+                        <li>All Premium Features</li>
+                        <li>Unlimited AI Requests</li>
+                        <li>Advanced Grammar Tools</li>
+                        <li>Tone Adjustment</li>
+                        <li>Priority Support</li>
+                    </ul>
+                    <div class="plan-badge">Flexible</div>
+                </div>
+                
+                <div class="pricing-card popular" data-plan="sixmonth" onclick="selectPlan('sixmonth')">
+                    <div class="popular-badge">Best Value</div>
+                    <h3>6 Month Plan</h3>
+                    <div class="price">₹1,500<span>/6 months</span></div>
+                    <div class="savings">Save ₹300 (17% off)</div>
+                    <ul class="features-list">
+                        <li>All Monthly Features</li>
+                        <li>Advanced AI Models</li>
+                        <li>Custom Writing Goals</li>
+                        <li>Export Options</li>
+                        <li>Analytics Dashboard</li>
+                        <li>24/7 Priority Support</li>
+                    </ul>
+                    <div class="plan-badge">Most Popular</div>
+                </div>
+            </div>
+            
+            <button id="proceedPayment" class="btn btn-premium btn-full" onclick="proceedWithPayment()">
+                <i class="fas fa-credit-card"></i> Proceed to Payment
+            </button>
+            
+            <div class="payment-security">
+                <i class="fas fa-shield-alt"></i>
+                <span>Secure payment powered by Razorpay</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading" class="loading">
+        <div class="spinner"></div>
+        <p>Processing your text...</p>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
