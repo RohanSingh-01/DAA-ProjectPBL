@@ -3,16 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Writing Assistant</title>
+    <title>AI Writing Assistant - Transform Your Writing with AI</title>
+    <meta name="description" content="Enhance your content with powerful AI-driven tools for grammar, tone, vocabulary, and more. Write better, faster, and with confidence.">
+    
+    <!-- External Resources -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    
+    <!-- Local Styles -->
     <link rel="stylesheet" href="styles.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✍️</text></svg>">
 </head>
 <body>
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
-            <a href="#" class="logo" onclick="showLanding()">
+            <a href="#" class="logo">
                 <i class="fas fa-pen-fancy"></i> AI Writer Pro
             </a>
             <div class="nav-buttons">
@@ -21,17 +29,17 @@
                     <span id="premiumBadge" class="premium-badge" style="display: none;">
                         <i class="fas fa-crown"></i> Premium
                     </span>
-                    <button class="btn btn-outline" onclick="logout()">
+                    <button class="btn btn-outline">
                         <i class="fas fa-sign-out-alt"></i> Logout
                     </button>
                 </span>
-                <button class="btn btn-premium" id="upgradeBtn" onclick="showPremiumModal()" style="display: none;">
+                <button class="btn btn-premium" id="upgradeBtn" style="display: none;">
                     <i class="fas fa-crown"></i> Upgrade to Premium
                 </button>
-                <button class="btn btn-outline" id="loginBtn" onclick="showLoginModal()">
+                <button class="btn btn-outline" id="loginBtn">
                     <i class="fas fa-sign-in-alt"></i> Login
                 </button>
-                <button class="btn btn-primary" id="registerBtn" onclick="showRegisterModal()">
+                <button class="btn btn-primary" id="registerBtn">
                     <i class="fas fa-user-plus"></i> Sign Up
                 </button>
             </div>
@@ -45,10 +53,10 @@
                 <h1>Transform Your Writing with AI</h1>
                 <p>Enhance your content with powerful AI-driven tools for grammar, tone, vocabulary, and more. Write better, faster, and with confidence.</p>
                 <div class="hero-buttons">
-                    <button class="btn btn-primary btn-large" onclick="showRegisterModal()">
+                    <button class="btn btn-primary btn-large">
                         <i class="fas fa-rocket"></i> Get Started Free
                     </button>
-                    <button class="btn btn-outline btn-large" onclick="showLoginModal()">
+                    <button class="btn btn-outline btn-large">
                         <i class="fas fa-sign-in-alt"></i> Sign In
                     </button>
                 </div>
@@ -118,7 +126,7 @@
                             <li>5 AI requests/day</li>
                             <li>Basic Support</li>
                         </ul>
-                        <button class="btn btn-outline" onclick="showRegisterModal()">Get Started</button>
+                        <button class="btn btn-outline">Get Started</button>
                     </div>
                     <div class="pricing-card popular">
                         <div class="popular-badge">Most Popular</div>
@@ -133,7 +141,7 @@
                             <li>Unlimited AI Requests</li>
                             <li>Priority Support</li>
                         </ul>
-                        <button class="btn btn-primary" onclick="showPremiumModal()">Upgrade Now</button>
+                        <button class="btn btn-primary">Upgrade Now</button>
                     </div>
                     <div class="pricing-card">
                         <div class="savings-badge">Save 17%</div>
@@ -147,7 +155,7 @@
                             <li>Analytics Dashboard</li>
                             <li>24/7 Priority Support</li>
                         </ul>
-                        <button class="btn btn-premium" onclick="showPremiumModal()">Best Value</button>
+                        <button class="btn btn-premium">Best Value</button>
                     </div>
                 </div>
             </div>
@@ -232,6 +240,8 @@
                             <option value="friendly">Friendly</option>
                             <option value="persuasive">Persuasive</option>
                             <option value="academic">Academic</option>
+                            <option value="humorous">Humorous</option>
+                            <option value="serious">Serious</option>
                         </select>
                     </div>
                     <div class="option-group" id="goalOptions" style="display: none;">
@@ -243,6 +253,8 @@
                             <option value="creative">Creative Writing</option>
                             <option value="summary">Summary</option>
                             <option value="proposal">Proposal</option>
+                            <option value="blog">Blog Post</option>
+                            <option value="social-media">Social Media</option>
                         </select>
                     </div>
                 </div>
@@ -298,7 +310,7 @@
     <!-- Login Modal -->
     <div id="loginModal" class="modal">
         <div class="modal-content">
-            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <button class="modal-close">&times;</button>
             <div class="modal-header">
                 <h2><i class="fas fa-sign-in-alt"></i> Welcome Back</h2>
                 <p>Sign in to continue your writing journey</p>
@@ -318,7 +330,7 @@
             </form>
             <div class="modal-footer">
                 <p>Don't have an account? 
-                    <a href="#" onclick="showRegisterModal()">Create one now</a>
+                    <a href="#">Create one now</a>
                 </p>
             </div>
         </div>
@@ -327,7 +339,7 @@
     <!-- Register Modal -->
     <div id="registerModal" class="modal">
         <div class="modal-content">
-            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <button class="modal-close">&times;</button>
             <div class="modal-header">
                 <h2><i class="fas fa-user-plus"></i> Join AI Writer Pro</h2>
                 <p>Create your account and start writing better</p>
@@ -351,7 +363,7 @@
             </form>
             <div class="modal-footer">
                 <p>Already have an account? 
-                    <a href="#" onclick="showLoginModal()">Sign in here</a>
+                    <a href="#">Sign in here</a>
                 </p>
             </div>
         </div>
@@ -360,14 +372,14 @@
     <!-- Premium Modal -->
     <div id="premiumModal" class="modal premium-modal">
         <div class="modal-content">
-            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <button class="modal-close">&times;</button>
             <div class="modal-header">
                 <h2><i class="fas fa-crown"></i> Upgrade to Premium</h2>
                 <p>Unlock all features and supercharge your writing</p>
             </div>
             
             <div class="pricing-cards">
-                <div class="pricing-card" data-plan="monthly" onclick="selectPlan('monthly')">
+                <div class="pricing-card" data-plan="monthly">
                     <h3>Monthly Plan</h3>
                     <div class="price">₹300<span>/month</span></div>
                     <ul class="features-list">
@@ -375,12 +387,14 @@
                         <li>Unlimited AI Requests</li>
                         <li>Advanced Grammar Tools</li>
                         <li>Tone Adjustment</li>
+                        <li>Vocabulary Enhancement</li>
+                        <li>Goal-Based Writing</li>
                         <li>Priority Support</li>
                     </ul>
                     <div class="plan-badge">Flexible</div>
                 </div>
                 
-                <div class="pricing-card popular" data-plan="sixmonth" onclick="selectPlan('sixmonth')">
+                <div class="pricing-card popular" data-plan="sixmonth">
                     <div class="popular-badge">Best Value</div>
                     <h3>6 Month Plan</h3>
                     <div class="price">₹1,500<span>/6 months</span></div>
@@ -397,8 +411,8 @@
                 </div>
             </div>
             
-            <button id="proceedPayment" class="btn btn-premium btn-full" onclick="proceedWithPayment()">
-                <i class="fas fa-credit-card"></i> Proceed to Payment
+            <button id="proceedPayment" class="btn btn-premium btn-full" disabled>
+                <i class="fas fa-credit-card"></i> Select a Plan to Continue
             </button>
             
             <div class="payment-security">
@@ -411,10 +425,15 @@
     <!-- Loading Overlay -->
     <div id="loading" class="loading">
         <div class="spinner"></div>
-        <p>Processing your text...</p>
+        <p>Processing your request...</p>
     </div>
 
+    <!-- Scripts -->
     <script src="config.js"></script>
-    <script src="script.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/payment.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/writing-assistant.js"></script>
+    <script src="js/app.js"></script>
 </body>
 </html>

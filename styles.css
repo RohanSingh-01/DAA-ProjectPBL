@@ -1,786 +1,971 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Writing Assistant</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-    <style>
-        /* Global Styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        /* Navigation */
-        .navbar {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            z-index: 1000;
-            padding: 1rem 2rem;
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .nav-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .logo {
-            font-size: 1.8rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-        .logo:hover {
-            transform: scale(1.05);
-        }
-
-        .nav-buttons {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-        }
-
-        .btn {
-            padding: 0.7rem 1.8rem;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: 600;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s;
-        }
-
-        .btn:hover::before {
-            left: 100%;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-outline {
-            background: transparent;
-            color: #667eea;
-            border: 2px solid #667eea;
-        }
-
-        .btn-outline:hover {
-            background: #667eea;
-            color: white;
-            transform: translateY(-2px);
-        }
-
-        .btn-premium {
-            background: linear-gradient(135deg, #ffd700, #ffed4a);
-            color: #333;
-            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
-            animation: premium-glow 2s ease-in-out infinite alternate;
-        }
-
-        @keyframes premium-glow {
-            0% { box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3); }
-            100% { box-shadow: 0 8px 25px rgba(255, 215, 0, 0.6); }
-        }
-
-        .btn-large {
-            padding: 1rem 2.5rem;
-            font-size: 1.1rem;
-            border-radius: 15px;
-        }
-
-        .btn-full {
-            width: 100%;
-            justify-content: center;
-        }
-
-        .premium-badge {
-            background: linear-gradient(135deg, #ffd700, #ffed4a);
-            color: #333;
-            padding: 0.4rem 1rem;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 0.8rem;
-            box-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
-        }
-
-        /* Landing Page */
-        .landing-page {
-            display: block;
-            padding-top: 80px;
-        }
-
-        .hero {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            align-items: center;
-            min-height: 90vh;
-            padding: 4rem 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-            gap: 4rem;
-        }
-
-        .hero-content {
-            color: white;
-        }
-
-        .hero h1 {
-            font-size: 4rem;
-            font-weight: 800;
-            margin-bottom: 1.5rem;
-            line-height: 1.1;
-            background: linear-gradient(135deg, #ffffff, #e0e7ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .hero p {
-            font-size: 1.3rem;
-            margin-bottom: 2.5rem;
-            opacity: 0.9;
-            line-height: 1.6;
-        }
-
-        .hero-buttons {
-            display: flex;
-            gap: 1.5rem;
-            flex-wrap: wrap;
-        }
-
-        .hero-animation {
-            position: relative;
-            height: 500px;
-        }
-
-        .floating-card {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 20px;
-            padding: 2rem;
-            color: white;
-            text-align: center;
-            animation: float 6s ease-in-out infinite;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        .floating-card:nth-child(1) {
-            top: 20%;
-            left: 10%;
-            animation-delay: 0s;
-        }
-
-        .floating-card:nth-child(2) {
-            top: 50%;
-            right: 20%;
-            animation-delay: 2s;
-        }
-
-        .floating-card:nth-child(3) {
-            bottom: 20%;
-            left: 30%;
-            animation-delay: 4s;
-        }
-
-        .floating-card i {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            display: block;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(2deg); }
-        }
-
-        /* Features Section */
-        .features {
-            padding: 6rem 2rem;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-        }
-
-        .features h2 {
-            text-align: center;
-            font-size: 3rem;
-            color: white;
-            margin-bottom: 3rem;
-            font-weight: 700;
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .feature-card {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 2.5rem;
-            border-radius: 20px;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
-        }
-
-        .feature-icon {
-            font-size: 3.5rem;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 1.5rem;
-        }
-
-        .feature-card h3 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            color: #333;
-        }
-
-        .feature-card p {
-            color: #666;
-            line-height: 1.6;
-        }
-
-        /* Pricing Preview */
-        .pricing-preview {
-            padding: 6rem 2rem;
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .pricing-preview h2 {
-            text-align: center;
-            font-size: 3rem;
-            color: white;
-            margin-bottom: 3rem;
-            font-weight: 700;
-        }
-
-        .pricing-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
-        .pricing-card {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 2.5rem;
-            border-radius: 20px;
-            text-align: center;
-            position: relative;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            border: 3px solid transparent;
-        }
-
-        .pricing-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
-        }
-
-        .pricing-card.popular {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            transform: scale(1.05);
-        }
-
-        .pricing-card.selected {
-            border-color: #667eea;
-            transform: translateY(-5px);
-        }
-
-        .popular-badge, .savings-badge {
-            position: absolute;
-            top: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #ffd700;
-            color: #333;
-            padding: 0.5rem 1.5rem;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 0.8rem;
-        }
-
-        .price {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin: 1rem 0;
-        }
-
-        .price span {
-            font-size: 1rem;
-            opacity: 0.7;
-        }
-
-        .savings {
-            color: #28a745;
-            font-weight
-</head>
-<body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <a href="#" class="logo" onclick="showLanding()">
-                <i class="fas fa-pen-fancy"></i> AI Writer Pro
-            </a>
-            <div class="nav-buttons">
-                <span class="user-info" id="userInfo" style="display: none;">
-                    <span id="userName">Welcome, User!</span>
-                    <span id="premiumBadge" class="premium-badge" style="display: none;">
-                        <i class="fas fa-crown"></i> Premium
-                    </span>
-                    <button class="btn btn-outline" onclick="logout()">
-                        <i class="fas fa-sign-out-alt"></i> Logout
-                    </button>
-                </span>
-                <button class="btn btn-premium" id="upgradeBtn" onclick="showPremiumModal()" style="display: none;">
-                    <i class="fas fa-crown"></i> Upgrade to Premium
-                </button>
-                <button class="btn btn-outline" id="loginBtn" onclick="showLoginModal()">
-                    <i class="fas fa-sign-in-alt"></i> Login
-                </button>
-                <button class="btn btn-primary" id="registerBtn" onclick="showRegisterModal()">
-                    <i class="fas fa-user-plus"></i> Sign Up
-                </button>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Landing Page -->
-    <div id="landingPage" class="page active landing-page">
-        <section class="hero">
-            <div class="hero-content">
-                <h1>Transform Your Writing with AI</h1>
-                <p>Enhance your content with powerful AI-driven tools for grammar, tone, vocabulary, and more. Write better, faster, and with confidence.</p>
-                <div class="hero-buttons">
-                    <button class="btn btn-primary btn-large" onclick="showRegisterModal()">
-                        <i class="fas fa-rocket"></i> Get Started Free
-                    </button>
-                    <button class="btn btn-outline btn-large" onclick="showLoginModal()">
-                        <i class="fas fa-sign-in-alt"></i> Sign In
-                    </button>
-                </div>
-            </div>
-            <div class="hero-animation">
-                <div class="floating-card">
-                    <i class="fas fa-spell-check"></i>
-                    <span>Grammar Check</span>
-                </div>
-                <div class="floating-card">
-                    <i class="fas fa-adjust"></i>
-                    <span>Tone Adjustment</span>
-                </div>
-                <div class="floating-card">
-                    <i class="fas fa-brain"></i>
-                    <span>AI Enhancement</span>
-                </div>
-            </div>
-        </section>
-
-        <section class="features">
-            <div class="container">
-                <h2>Powerful Writing Tools</h2>
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-spell-check"></i>
-                        </div>
-                        <h3>Smart Grammar Check</h3>
-                        <p>Advanced AI-powered grammar and spell checking that goes beyond basic corrections.</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-adjust"></i>
-                        </div>
-                        <h3>Tone Adjustment</h3>
-                        <p>Transform your writing tone to match any audience - professional, casual, academic, and more.</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-brain"></i>
-                        </div>
-                        <h3>Vocabulary Enhancement</h3>
-                        <p>Elevate your writing with sophisticated vocabulary suggestions and improvements.</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-target"></i>
-                        </div>
-                        <h3>Goal-Based Writing</h3>
-                        <p>Optimize your content for specific purposes - emails, essays, reports, and creative writing.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="pricing-preview">
-            <div class="container">
-                <h2>Choose Your Plan</h2>
-                <div class="pricing-cards">
-                    <div class="pricing-card">
-                        <h3>Free</h3>
-                        <div class="price">₹0<span>/month</span></div>
-                        <ul class="features-list">
-                            <li>Basic Grammar Check</li>
-                            <li>Spell Check</li>
-                            <li>5 AI requests/day</li>
-                            <li>Basic Support</li>
-                        </ul>
-                        <button class="btn btn-outline" onclick="showRegisterModal()">Get Started</button>
-                    </div>
-                    <div class="pricing-card popular">
-                        <div class="popular-badge">Most Popular</div>
-                        <h3>Monthly</h3>
-                        <div class="price">₹300<span>/month</span></div>
-                        <ul class="features-list">
-                            <li>All Free Features</li>
-                            <li>Advanced Grammar & Style</li>
-                            <li>Tone Adjustment</li>
-                            <li>Vocabulary Enhancement</li>
-                            <li>Goal-Based Writing</li>
-                            <li>Unlimited AI Requests</li>
-                            <li>Priority Support</li>
-                        </ul>
-                        <button class="btn btn-primary" onclick="showPremiumModal()">Upgrade Now</button>
-                    </div>
-                    <div class="pricing-card">
-                        <div class="savings-badge">Save 17%</div>
-                        <h3>6 Months</h3>
-                        <div class="price">₹1,500<span>/6 months</span></div>
-                        <ul class="features-list">
-                            <li>All Premium Features</li>
-                            <li>Advanced AI Models</li>
-                            <li>Custom Writing Goals</li>
-                            <li>Export & Integration</li>
-                            <li>Analytics Dashboard</li>
-                            <li>24/7 Priority Support</li>
-                        </ul>
-                        <button class="btn btn-premium" onclick="showPremiumModal()">Best Value</button>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </div>
-
-    <!-- Main Application -->
-    <div id="mainApp" class="page main-app">
-        <div class="app-container">
-            <header class="app-header">
-                <div class="user-info">
-                    <span id="appUserName"></span>
-                    <span id="appPremiumBadge" class="premium-badge" style="display: none;">
-                        <i class="fas fa-crown"></i> Premium
-                    </span>
-                </div>
-                <h1><i class="fas fa-pen-fancy"></i> AI Writing Assistant</h1>
-                <p>Enhance your writing with AI-powered tools</p>
-            </header>
-
-            <div class="api-setup">
-                <div class="api-input-group">
-                    <label for="apiKey">
-                        <i class="fas fa-key"></i> Gemini API Key:
-                    </label>
-                    <input 
-                        type="password" 
-                        id="apiKey" 
-                        placeholder="Enter your Gemini API key"
-                        class="api-input"
-                    >
-                    <button id="saveApiKey" class="save-btn">
-                        <i class="fas fa-save"></i> Save
-                    </button>
-                </div>
-                <div class="api-status" id="apiStatus">
-                    <i class="fas fa-exclamation-circle"></i> API key not configured
-                </div>
-            </div>
-
-            <div class="tools-section">
-                <h2><i class="fas fa-tools"></i> Writing Tools</h2>
-                <div class="tools-grid">
-                    <button class="tool-btn active" data-tool="spell-check">
-                        <i class="tool-icon fas fa-spell-check"></i>
-                        <span>Spell Check</span>
-                    </button>
-                    <button class="tool-btn" data-tool="grammar">
-                        <i class="tool-icon fas fa-language"></i>
-                        <span>Grammar</span>
-                    </button>
-                    <button class="tool-btn premium-only" data-tool="tone">
-                        <i class="tool-icon fas fa-adjust"></i>
-                        <span>Change Tone</span>
-                        <div class="premium-lock"><i class="fas fa-crown"></i></div>
-                    </button>
-                    <button class="tool-btn premium-only" data-tool="vocab">
-                        <i class="tool-icon fas fa-book"></i>
-                        <span>Enhance Vocab</span>
-                        <div class="premium-lock"><i class="fas fa-crown"></i></div>
-                    </button>
-                    <button class="tool-btn premium-only" data-tool="goal-based">
-                        <i class="tool-icon fas fa-target"></i>
-                        <span>Goal-Based</span>
-                        <div class="premium-lock"><i class="fas fa-crown"></i></div>
-                    </button>
-                    <button class="tool-btn premium-only" data-tool="creative">
-                        <i class="tool-icon fas fa-magic"></i>
-                        <span>Creative Writer</span>
-                        <div class="premium-lock"><i class="fas fa-crown"></i></div>
-                    </button>
-                </div>
-
-                <!-- Options Panel -->
-                <div class="options-panel" id="optionsPanel">
-                    <div class="option-group" id="toneOptions" style="display: none;">
-                        <label>Select Tone:</label>
-                        <select id="toneSelect" class="select-input">
-                            <option value="professional">Professional</option>
-                            <option value="casual">Casual</option>
-                            <option value="formal">Formal</option>
-                            <option value="friendly">Friendly</option>
-                            <option value="persuasive">Persuasive</option>
-                            <option value="academic">Academic</option>
-                        </select>
-                    </div>
-                    <div class="option-group" id="goalOptions" style="display: none;">
-                        <label>Writing Goal:</label>
-                        <select id="goalSelect" class="select-input">
-                            <option value="email">Email</option>
-                            <option value="essay">Essay</option>
-                            <option value="report">Report</option>
-                            <option value="creative">Creative Writing</option>
-                            <option value="summary">Summary</option>
-                            <option value="proposal">Proposal</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <div class="main-content">
-                <div class="content-section">
-                    <div class="section-header">
-                        <h3><i class="fas fa-edit"></i> Input Text</h3>
-                        <div class="word-count">
-                            Words: <span id="wordCount">0</span> | 
-                            Characters: <span id="charCount">0</span>
-                        </div>
-                    </div>
-                    <textarea 
-                        id="inputText" 
-                        placeholder="Enter your text here to improve it with AI..."
-                        class="text-area"
-                    ></textarea>
-                    <div class="input-actions">
-                        <button id="clearInput" class="btn btn-outline">
-                            <i class="fas fa-trash"></i> Clear
-                        </button>
-                        <button id="processText" class="btn btn-primary">
-                            <i class="fas fa-magic"></i> Process Text
-                        </button>
-                    </div>
-                </div>
-
-                <div class="content-section">
-                    <div class="section-header">
-                        <h3><i class="fas fa-check-circle"></i> Enhanced Text</h3>
-                        <div class="output-actions">
-                            <button id="copyOutput" class="btn btn-outline" disabled>
-                                <i class="fas fa-copy"></i> Copy
-                            </button>
-                            <button id="downloadOutput" class="btn btn-outline" disabled>
-                                <i class="fas fa-download"></i> Download
-                            </button>
-                        </div>
-                    </div>
-                    <div id="outputText" class="output-area">
-                        <div class="placeholder">
-                            <i class="fas fa-lightbulb"></i>
-                            <p>Your enhanced text will appear here...</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Login Modal -->
-    <div id="loginModal" class="modal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeModal()">&times;</button>
-            <div class="modal-header">
-                <h2><i class="fas fa-sign-in-alt"></i> Welcome Back</h2>
-                <p>Sign in to continue your writing journey</p>
-            </div>
-            <form id="loginForm">
-                <div class="form-group">
-                    <label for="loginEmail">Email Address</label>
-                    <input type="email" id="loginEmail" required placeholder="Enter your email">
-                </div>
-                <div class="form-group">
-                    <label for="loginPassword">Password</label>
-                    <input type="password" id="loginPassword" required placeholder="Enter your password">
-                </div>
-                <button type="submit" class="btn btn-primary btn-full">
-                    <i class="fas fa-sign-in-alt"></i> Sign In
-                </button>
-            </form>
-            <div class="modal-footer">
-                <p>Don't have an account? 
-                    <a href="#" onclick="showRegisterModal()">Create one now</a>
-                </p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Register Modal -->
-    <div id="registerModal" class="modal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeModal()">&times;</button>
-            <div class="modal-header">
-                <h2><i class="fas fa-user-plus"></i> Join AI Writer Pro</h2>
-                <p>Create your account and start writing better</p>
-            </div>
-            <form id="registerForm">
-                <div class="form-group">
-                    <label for="registerName">Full Name</label>
-                    <input type="text" id="registerName" required placeholder="Enter your full name">
-                </div>
-                <div class="form-group">
-                    <label for="registerEmail">Email Address</label>
-                    <input type="email" id="registerEmail" required placeholder="Enter your email">
-                </div>
-                <div class="form-group">
-                    <label for="registerPassword">Password</label>
-                    <input type="password" id="registerPassword" required placeholder="Create a strong password">
-                </div>
-                <button type="submit" class="btn btn-primary btn-full">
-                    <i class="fas fa-user-plus"></i> Create Account
-                </button>
-            </form>
-            <div class="modal-footer">
-                <p>Already have an account? 
-                    <a href="#" onclick="showLoginModal()">Sign in here</a>
-                </p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Premium Modal -->
-    <div id="premiumModal" class="modal premium-modal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeModal()">&times;</button>
-            <div class="modal-header">
-                <h2><i class="fas fa-crown"></i> Upgrade to Premium</h2>
-                <p>Unlock all features and supercharge your writing</p>
-            </div>
-            
-            <div class="pricing-cards">
-                <div class="pricing-card" data-plan="monthly" onclick="selectPlan('monthly')">
-                    <h3>Monthly Plan</h3>
-                    <div class="price">₹300<span>/month</span></div>
-                    <ul class="features-list">
-                        <li>All Premium Features</li>
-                        <li>Unlimited AI Requests</li>
-                        <li>Advanced Grammar Tools</li>
-                        <li>Tone Adjustment</li>
-                        <li>Priority Support</li>
-                    </ul>
-                    <div class="plan-badge">Flexible</div>
-                </div>
-                
-                <div class="pricing-card popular" data-plan="sixmonth" onclick="selectPlan('sixmonth')">
-                    <div class="popular-badge">Best Value</div>
-                    <h3>6 Month Plan</h3>
-                    <div class="price">₹1,500<span>/6 months</span></div>
-                    <div class="savings">Save ₹300 (17% off)</div>
-                    <ul class="features-list">
-                        <li>All Monthly Features</li>
-                        <li>Advanced AI Models</li>
-                        <li>Custom Writing Goals</li>
-                        <li>Export Options</li>
-                        <li>Analytics Dashboard</li>
-                        <li>24/7 Priority Support</li>
-                    </ul>
-                    <div class="plan-badge">Most Popular</div>
-                </div>
-            </div>
-            
-            <button id="proceedPayment" class="btn btn-premium btn-full" onclick="proceedWithPayment()">
-                <i class="fas fa-credit-card"></i> Proceed to Payment
-            </button>
-            
-            <div class="payment-security">
-                <i class="fas fa-shield-alt"></i>
-                <span>Secure payment powered by Razorpay</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Loading Overlay -->
-    <div id="loading" class="loading">
-        <div class="spinner"></div>
-        <p>Processing your text...</p>
-    </div>
-
-    <script src="config.js"></script>
-    <script src="script.js"></script>
-</body>
-</html>
+/* Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+/* Page Management */
+.page {
+    display: none;
+}
+
+.page.active {
+    display: block;
+}
+
+/* Navigation */
+.navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    z-index: 1000;
+    padding: 1rem 2rem;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.logo {
+    font-size: 1.8rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.logo:hover {
+    transform: scale(1.05);
+}
+
+.nav-buttons {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* Buttons */
+.btn {
+    padding: 0.7rem 1.8rem;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn:hover::before {
+    left: 100%;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.btn-outline {
+    background: transparent;
+    color: #667eea;
+    border: 2px solid #667eea;
+}
+
+.btn-outline:hover {
+    background: #667eea;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.btn-premium {
+    background: linear-gradient(135deg, #ffd700, #ffed4a);
+    color: #333;
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+    animation: premium-glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes premium-glow {
+    0% { box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3); }
+    100% { box-shadow: 0 8px 25px rgba(255, 215, 0, 0.6); }
+}
+
+.btn-large {
+    padding: 1rem 2.5rem;
+    font-size: 1.1rem;
+    border-radius: 15px;
+}
+
+.btn-full {
+    width: 100%;
+    justify-content: center;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.premium-badge {
+    background: linear-gradient(135deg, #ffd700, #ffed4a);
+    color: #333;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    box-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
+}
+
+/* Landing Page */
+.landing-page {
+    display: block;
+    padding-top: 80px;
+}
+
+.hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    min-height: 90vh;
+    padding: 4rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    gap: 4rem;
+}
+
+.hero-content {
+    color: white;
+}
+
+.hero h1 {
+    font-size: 4rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #ffffff, #e0e7ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero p {
+    font-size: 1.3rem;
+    margin-bottom: 2.5rem;
+    opacity: 0.9;
+    line-height: 1.6;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.hero-animation {
+    position: relative;
+    height: 500px;
+}
+
+.floating-card {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 2rem;
+    color: white;
+    text-align: center;
+    animation: float 6s ease-in-out infinite;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.floating-card:nth-child(1) {
+    top: 20%;
+    left: 10%;
+    animation-delay: 0s;
+}
+
+.floating-card:nth-child(2) {
+    top: 50%;
+    right: 20%;
+    animation-delay: 2s;
+}
+
+.floating-card:nth-child(3) {
+    bottom: 20%;
+    left: 30%;
+    animation-delay: 4s;
+}
+
+.floating-card i {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(2deg); }
+}
+
+/* Features Section */
+.features {
+    padding: 6rem 2rem;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.features h2 {
+    text-align: center;
+    font-size: 3rem;
+    color: white;
+    margin-bottom: 3rem;
+    font-weight: 700;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.feature-card {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 2.5rem;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+}
+
+.feature-icon {
+    font-size: 3.5rem;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1.5rem;
+}
+
+.feature-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.feature-card p {
+    color: #666;
+    line-height: 1.6;
+}
+
+/* Pricing Preview */
+.pricing-preview {
+    padding: 6rem 2rem;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.pricing-preview h2 {
+    text-align: center;
+    font-size: 3rem;
+    color: white;
+    margin-bottom: 3rem;
+    font-weight: 700;
+}
+
+.pricing-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.pricing-card {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 2.5rem;
+    border-radius: 20px;
+    text-align: center;
+    position: relative;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: 3px solid transparent;
+}
+
+.pricing-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+}
+
+.pricing-card.popular {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    transform: scale(1.05);
+}
+
+.pricing-card.selected {
+    border-color: #667eea;
+    transform: translateY(-5px);
+}
+
+.popular-badge, .savings-badge {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #ffd700;
+    color: #333;
+    padding: 0.5rem 1.5rem;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.8rem;
+}
+
+.price {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 1rem 0;
+}
+
+.price span {
+    font-size: 1rem;
+    opacity: 0.7;
+}
+
+.savings {
+    color: #28a745;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.features-list {
+    list-style: none;
+    margin: 2rem 0;
+    text-align: left;
+}
+
+.features-list li {
+    padding: 0.5rem 0;
+    position: relative;
+    padding-left: 2rem;
+}
+
+.features-list li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: #28a745;
+    font-weight: bold;
+}
+
+.plan-badge {
+    position: absolute;
+    bottom: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #28a745;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+/* Main Application */
+.main-app {
+    padding-top: 80px;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.app-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.app-header {
+    text-align: center;
+    color: white;
+    margin-bottom: 3rem;
+    position: relative;
+}
+
+.app-header .user-info {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.app-header h1 {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #ffffff, #e0e7ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.app-header p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
+
+/* API Setup */
+.api-setup {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 2rem;
+    border-radius: 20px;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.api-input-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.api-input-group label {
+    font-weight: 600;
+    color: #333;
+    min-width: 150px;
+}
+
+.api-input {
+    flex: 1;
+    padding: 0.8rem 1rem;
+    border: 2px solid #e1e5e9;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.api-input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.save-btn {
+    padding: 0.8rem 1.5rem;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.save-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+}
+
+.api-status {
+    padding: 0.8rem 1rem;
+    border-radius: 10px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.api-status.success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.api-status.error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Tools Section */
+.tools-section {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 2rem;
+    border-radius: 20px;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.tools-section h2 {
+    color: #333;
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+}
+
+.tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.tool-btn {
+    background: white;
+    border: 2px solid #e1e5e9;
+    border-radius: 15px;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.tool-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.tool-btn.active {
+    border-color: #667eea;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+}
+
+.tool-btn.premium-only {
+    opacity: 0.6;
+    position: relative;
+}
+
+.tool-btn.premium-only:not(.unlocked) {
+    cursor: not-allowed;
+}
+
+.premium-lock {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #ffd700;
+    color: #333;
+    padding: 0.3rem;
+    border-radius: 50%;
+    font-size: 0.8rem;
+}
+
+.tool-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.tool-btn span {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+/* Options Panel */
+.options-panel {
+    margin-top: 1rem;
+}
+
+.option-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.option-group label {
+    font-weight: 600;
+    color: #333;
+    min-width: 120px;
+}
+
+.select-input {
+    padding: 0.8rem 1rem;
+    border: 2px solid #e1e5e9;
+    border-radius: 10px;
+    font-size: 1rem;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.select-input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Main Content */
+.main-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.content-section {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.section-header h3 {
+    color: #333;
+    font-size: 1.5rem;
+}
+
+.word-count {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.output-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.text-area {
+    width: 100%;
+    min-height: 300px;
+    padding: 1rem;
+    border: 2px solid #e1e5e9;
+    border-radius: 15px;
+    font-size: 1rem;
+    font-family: inherit;
+    resize: vertical;
+    transition: all 0.3s ease;
+}
+
+.text-area:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.input-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    justify-content: flex-end;
+}
+
+.output-area {
+    min-height: 300px;
+    padding: 1rem;
+    border: 2px solid #e1e5e9;
+    border-radius: 15px;
+    background: #f8f9fa;
+    white-space: pre-wrap;
+    font-family: inherit;
+    line-height: 1.6;
+}
+
+.placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #999;
+    text-align: center;
+}
+
+.placeholder i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+/* Modals */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+    z-index: 2000;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-content {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    animation: slideUp 0.3s ease;
+}
+
+.premium-modal .modal-content {
+    max-width: 800px;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    color: #999;
+    transition: color 0.3s ease;
+}
+
+.modal-close:hover {
+    color: #333;
+}
+
+.modal-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.modal-header h2 {
+    color: #333;
+    margin-bottom: 0.5rem;
+    font-size: 2rem;
+}
+
+.modal-header p {
+    color: #666;
+    font-size: 1.1rem;
+}
+
+/* Forms */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 2px solid #e1e5e9;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.modal-footer {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e1e5e9;
+}
+
+.modal-footer a {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.modal-footer a:hover {
+    text-decoration: underline;
+}
+
+/* Payment Security */
+.payment-security {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+/* Loading */
+.loading {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+    z-index: 3000;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    color: white;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top: 4px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 2rem;
+    }
+    
+    .hero h1 {
+        font-size: 2.5rem;
+    }
+    
+    .main-content {
+        grid-template-columns: 1fr;
+    }
+    
+    .nav-buttons {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .navbar {
+        padding: 1rem;
+    }
+    
+    .pricing-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .tools-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+    
+    .hero-buttons {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero h1 {
+        font-size: 2rem;
+    }
+    
+    .hero p {
+        font-size: 1.1rem;
+    }
+    
+    .btn-large {
+        padding: 0.8rem 2rem;
+        font-size: 1rem;
+    }
+    
+    .modal-content {
+        padding: 1.5rem;
+        margin: 1rem;
+    }
+    
+    .app-container {
+        padding: 1rem;
+    }
+}
