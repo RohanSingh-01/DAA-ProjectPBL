@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Writing Assistant</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1><i class="fas fa-pen-fancy"></i> AI Writing Assistant</h1>
+            <p>Enhance your writing with AI-powered tools</p>
+        </header>
+
+        <div class="api-setup">
+            <div class="api-input-group">
+                <label for="apiKey">
+                    <i class="fas fa-key"></i> Gemini API Key:
+                </label>
+                <input 
+                    type="password" 
+                    id="apiKey" 
+                    placeholder="Enter your Gemini API key"
+                    class="api-input"
+                >
+                <button id="saveApiKey" class="save-btn">
+                    <i class="fas fa-save"></i> Save
+                </button>
+            </div>
+            <div class="api-status" id="apiStatus">
+                <i class="fas fa-exclamation-circle"></i> API key not configured
+            </div>
+        </div>
+
+        <div class="tools-section">
+            <h2><i class="fas fa-tools"></i> Writing Tools</h2>
+            <div class="tool-buttons">
+                <button class="tool-btn active" data-tool="spell-check">
+                    <i class="fas fa-spell-check"></i>
+                    <span>Spell Check</span>
+                </button>
+                <button class="tool-btn" data-tool="grammar">
+                    <i class="fas fa-language"></i>
+                    <span>Grammar</span>
+                </button>
+                <button class="tool-btn" data-tool="tone">
+                    <i class="fas fa-adjust"></i>
+                    <span>Change Tone</span>
+                </button>
+                <button class="tool-btn" data-tool="vocab">
+                    <i class="fas fa-book"></i>
+                    <span>Enhance Vocab</span>
+                </button>
+                <button class="tool-btn" data-tool="goal-based">
+                    <i class="fas fa-target"></i>
+                    <span>Goal-Based</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="options-panel" id="optionsPanel">
+            <!-- Tone options -->
+            <div class="option-group" id="toneOptions" style="display: none;">
+                <label>Select Tone:</label>
+                <select id="toneSelect">
+                    <option value="professional">Professional</option>
+                    <option value="casual">Casual</option>
+                    <option value="formal">Formal</option>
+                    <option value="friendly">Friendly</option>
+                    <option value="persuasive">Persuasive</option>
+                    <option value="academic">Academic</option>
+                </select>
+            </div>
+
+            <!-- Goal-based options -->
+            <div class="option-group" id="goalOptions" style="display: none;">
+                <label>Writing Goal:</label>
+                <select id="goalSelect">
+                    <option value="email">Email</option>
+                    <option value="essay">Essay</option>
+                    <option value="report">Report</option>
+                    <option value="creative">Creative Writing</option>
+                    <option value="summary">Summary</option>
+                    <option value="proposal">Proposal</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="input-section">
+                <div class="section-header">
+                    <h3><i class="fas fa-edit"></i> Input Text</h3>
+                    <div class="word-count">
+                        Words: <span id="wordCount">0</span> | 
+                        Characters: <span id="charCount">0</span>
+                    </div>
+                </div>
+                <textarea 
+                    id="inputText" 
+                    placeholder="Enter your text here to improve it with AI..."
+                    class="text-area"
+                ></textarea>
+                <div class="input-actions">
+                    <button id="clearInput" class="action-btn clear-btn">
+                        <i class="fas fa-trash"></i> Clear
+                    </button>
+                    <button id="processText" class="action-btn process-btn">
+                        <i class="fas fa-magic"></i> Process Text
+                    </button>
+                </div>
+            </div>
+
+            <div class="output-section">
+                <div class="section-header">
+                    <h3><i class="fas fa-check-circle"></i> Enhanced Text</h3>
+                    <div class="output-actions">
+                        <button id="copyOutput" class="action-btn copy-btn" disabled>
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                        <button id="downloadOutput" class="action-btn download-btn" disabled>
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                    </div>
+                </div>
+                <div id="outputText" class="output-area">
+                    <div class="placeholder">
+                        <i class="fas fa-lightbulb"></i>
+                        <p>Your enhanced text will appear here...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="loading" id="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>Processing your text with AI...</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
